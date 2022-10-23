@@ -13,6 +13,7 @@ var soldier = {
 		"stimpak",
 		"stimpak"
 	],
+	stimpak: 40,
 	attack: () => {
 		let critical = probability(soldier.stats.critical);
 		return critical ? soldier.stats.damage*2 : soldier.stats.damage;
@@ -23,27 +24,33 @@ var soldier = {
 			soldier.stats.health = 0;
 		}
 	},
-	heal: () => {
+	healStimpak: () => {
+		let log;
 		if (soldier.inventory.includes('stimpak')) {
-			soldier.stats.health += 20;
-			if (soldier.stats.health>soldier.stats.maxHealth) {
-				soldier.stats.health = soldier.stats.maxHealth;
+			if (soldier.stats.health!=soldier.stats.maxHealth) {
+				soldier.stats.health += soldier.stimpak;
+				if (soldier.stats.health>soldier.stats.maxHealth) {
+					soldier.stats.health = soldier.stats.maxHealth;
+				}
+				soldier.inventory.splice(soldier.inventory.indexOf('stimpak'), 1);
+				log = `Soldier heals ${soldier.stimpak}HP`;
+			} else {
+				log = `Soldier has full health`;
 			}
-			soldier.inventory.splice(soldier.inventory.indexOf('stimpak'), 1);
-			return true;
+		} else {
+			log = `No stimpak left`;
 		}
-		return false;
+		return log;
 	},
 	action: (enemy, action) => {
 		let log = '';
 		if (action === 'plasmaShot') {
 			let powerArmorAttack = soldier.attack();
 			enemy.hurt(powerArmorAttack);
-			log = `Hostile target receive ${powerArmorAttack} of damage`;
+			log = `Hostile target receives ${powerArmorAttack} of damage`;
 		}
 		else if (action === 'stimpak') {
-			soldier.heal();
-			log = `Power Armor heal ${20}HP`;
+			log = soldier.healStimpak();
 		}
 		return log;
 	}

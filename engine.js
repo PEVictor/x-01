@@ -1,10 +1,25 @@
 var logs = document.querySelector('#logs');
 
+var combatOverSwitch = false;
+
+var hostileTarget = supermutant;
+
 const win = () => {
 	newLog(logs, "Hostile target down.");
+	combatOver();
 }
 const lose = () => {
-	newLog(logs, "The integrity of the power armor has been compromised. You are dead.");
+	//newLog(logs, "The integrity of the power armor has been compromised. You're probably going to die.");
+	newLog(logs, "Your health has been compromised and you can't fight anymore. You are dead.");
+	combatOver();
+}
+
+console.log(document.getElementsByClassName('action')[0]);
+const combatOver = () => {
+	combatOverSwitch = true;
+	Array.prototype.forEach.call(document.getElementsByClassName('action'), (ele) => {
+		ele.style.display = 'none';
+	});
 }
 
 const reset = () => {
@@ -13,9 +28,10 @@ const reset = () => {
 }
 
 const setStats = () => {
+	document.querySelector('#hostile-target').innerHTML = hostileTarget.name;
 	document.querySelector('#hostile-target-health').innerHTML = hostileTarget.stats.health;
-	document.querySelector('#health').innerHTML = powerArmor.stats.health;
-	document.querySelector('#power-armor').innerHTML = powerArmor.stats.powerArmor;
+	document.querySelector('#health').innerHTML = soldier.stats.health;
+	document.querySelector('#power-armor').innerHTML = soldier.stats.powerArmor;
 }
 
 const refresh = (log) => {
@@ -23,7 +39,7 @@ const refresh = (log) => {
 	newLog(logs, log);
 	if (hostileTarget.stats.health === 0) {
 		win();
-	} else if (powerArmor.stats.health === 0) {
+	} else if (soldier.stats.health === 0) {
 		lose();
 	}
    	logs.scrollTop = logs.scrollHeight - logs.clientHeight;
@@ -34,16 +50,16 @@ setStats();
 
 document.querySelector('#plasma-shot').onclick = () => {
 	console.log("plasmaShot");
-	refresh(powerArmor.action(hostileTarget, 'plasmaShot'));
-	refresh(hostileTarget.action(powerArmor));
+	refresh(soldier.action(hostileTarget, 'plasmaShot'));
+	refresh(hostileTarget.action(soldier));
 }
 document.querySelector('#dodge-propulsion').onclick = () => {
-	refresh(powerArmor.action(hostileTarget, 'dodgePropulsion'));
-	refresh(hostileTarget.action(powerArmor));
+	refresh(soldier.action(hostileTarget, 'dodgePropulsion'));
+	refresh(hostileTarget.action(soldier));
 }
 document.querySelector('#stimpak').onclick = () => {
-	refresh(powerArmor.action(hostileTarget, 'stimpak'));
-	refresh(hostileTarget.action(powerArmor));
+	refresh(soldier.action(hostileTarget, 'stimpak'));
+	refresh(hostileTarget.action(soldier));
 }
 document.querySelector('#reset').onclick = () => {
 	reset();
